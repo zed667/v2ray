@@ -29,12 +29,19 @@
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
                 transform: translateY(0);
             }
+
             40% {
                 transform: translateY(-4px);
             }
+
             60% {
                 transform: translateY(-2px);
             }
@@ -45,10 +52,12 @@
                 transform: scale(0.95);
                 opacity: 0.8;
             }
+
             50% {
                 transform: scale(1.1);
                 opacity: 0.2;
             }
+
             100% {
                 transform: scale(0.95);
                 opacity: 0.8;
@@ -314,7 +323,8 @@
                         </label>
                         <select id="server">
                             <option value="international">سرور بین‌المللی</option>
-                            <option value="national" id="optNational" class="locked-option" disabled>🇮🇷 سرور ملی (VIP)</option>
+                            <option value="national" id="optNational" class="locked-option" disabled>🇮🇷 سرور ملی (VIP)
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -432,7 +442,8 @@
                     </select>
                 </div>
 
-                <button class="btn btn-primary" id="generateBtn"><i class="fa-solid fa-bolt"></i> ساخت کانفیگ اختصاصی</button>
+                <button class="btn btn-primary" id="generateBtn"><i class="fa-solid fa-bolt"></i> ساخت کانفیگ
+                    اختصاصی</button>
 
                 <div class="inline-terminal" id="inlineTerminal">
                     <div class="terminal-header">
@@ -456,9 +467,12 @@
         <div class="vip-modal">
             <i class="fa-solid fa-coins" style="font-size:2.5rem; color:#f59e0b; margin-bottom:10px;"></i>
             <h3 id="modalTitle">عدم موجودی سکه کافی</h3>
-            <p id="modalDesc" style="font-size:0.85rem; color:#64748b; margin-top:8px;">برای ساخت کانفیگ نیاز به سکه دارید یا گزینه‌های انتخابی شما قفل هستند.</p>
-            <a href="shop.html" class="btn btn-primary" style="margin-top:15px; text-decoration:none;"><i class="fa-solid fa-store"></i> ورود به فروشگاه (خرید سکه / VIP)</a>
-            <button class="btn" id="closeVipModal" style="background:#f1f5f9; color:#475569; margin-top:8px; width: 100%;">متوجه شدم</button>
+            <p id="modalDesc" style="font-size:0.85rem; color:#64748b; margin-top:8px;">برای ساخت کانفیگ نیاز به سکه
+                دارید یا گزینه‌های انتخابی شما قفل هستند.</p>
+            <a href="shop.html" class="btn btn-primary" style="margin-top:15px; text-decoration:none;"><i
+                    class="fa-solid fa-store"></i> ورود به فروشگاه (خرید سکه / VIP)</a>
+            <button class="btn" id="closeVipModal"
+                style="background:#f1f5f9; color:#475569; margin-top:8px; width: 100%;">متوجه شدم</button>
         </div>
     </div>
 
@@ -468,7 +482,8 @@
             <i class="fa-solid fa-circle-info" style="font-size:2.5rem; color:#38bdf8; margin-bottom:10px;"></i>
             <h3 id="helpTitle">راهنمای بخش</h3>
             <p id="helpDesc" style="font-size:0.88rem; color:#475569; margin-top:10px; line-height:1.6;"></p>
-            <button class="btn" id="closeHelpModal" style="background:#f1f5f9; color:#475569; margin-top:15px; width: 100%;">متوجه شدم</button>
+            <button class="btn" id="closeHelpModal"
+                style="background:#f1f5f9; color:#475569; margin-top:15px; width: 100%;">متوجه شدم</button>
         </div>
     </div>
 
@@ -850,95 +865,52 @@
             }
 
             try {
-                const res = await fetch('ghost.txt');
-                const text = await res.text();
-                let lines = text.split('\n').filter(l => l.trim().length > 0);
-
-                // فیلتر بر اساس پروتکل
-                if (selectedProtocol !== 'ALL') {
-                    lines = lines.filter(line => line.toLowerCase().startsWith(selectedProtocol.toLowerCase()));
+                // ۱. دریافت کانفیگ‌های تست‌شده و دارای پینگ واقعی از فایل خروجی اکشن
+                const res = await fetch('configs.json');
+                if (!res.ok) {
+                    throw new Error("فایل configs.json پیدا نشد! لطفاً از تب Actions یک‌بار به صورت دستی Run workflow را بزنید.");
                 }
 
-                // فیلتر بر اساس کشور انتخابی
+                let allConfigs = await res.json();
+
+                // ۲. فیلتر بر اساس پروتکل انتخاب‌شده
+                if (selectedProtocol !== 'ALL') {
+                    allConfigs = allConfigs.filter(item =>
+                        item.config.toLowerCase().startsWith(selectedProtocol.toLowerCase())
+                    );
+                }
+
+                // ۳. فیلتر بر اساس کشور
                 if (selectedCountry !== 'all') {
-                    const countryFiltered = lines.filter(line => 
-                        line.toUpperCase().includes(selectedCountry) || 
-                        line.toLowerCase().includes(selectedCountry.toLowerCase())
+                    const countryFiltered = allConfigs.filter(item =>
+                        item.config.toUpperCase().includes(selectedCountry) ||
+                        item.config.toLowerCase().includes(selectedCountry.toLowerCase())
                     );
                     if (countryFiltered.length > 0) {
-                        lines = countryFiltered;
+                        allConfigs = countryFiltered;
                     }
                 }
 
-                // بررسی دسترس‌پذیری سرویس انتخاب‌شده (Gemini, GPT و ...)
-                if (selectedService !== 'none') {
-                    const isServiceAccessible = await verifyServiceAccess(selectedService);
-                    if (isServiceAccessible) {
-                        await appendLog(`> [تایید شد] کانفیگ‌های بدون تحریم برای ${selectedService.toUpperCase()} استخراج شد ✅`, "#10b981", 120);
-                    } else {
-                        await appendLog(`> [هشدار] ممکن است برخی گره‌ها توسط ${selectedService.toUpperCase()} محدود شده باشند.`, "#f59e0b", 120);
-                    }
-                }
-
-                if (lines.length === 0) {
-                    await appendLog("> [SEVEN AI] خطا: مسیر تونل معتبری برای گزینه‌های انتخابی یافت نشد!", "#ef4444");
+                if (allConfigs.length === 0) {
+                    await appendLog("> [SEVEN AI] خطا: هیچ کانفیگ فعالی برای این تنظیمات یافت نشد!", "#ef4444");
                     await updateDoc(userRef, { coins: increment(requiredCoins) });
                     await appendLog("> [سیستم] سکه‌ها به حساب شما بازگردانده شد.", "#f59e0b");
-                    generateBtn.disabled = false;
-                    generateBtn.innerHTML = `<i class="fa-solid fa-bolt"></i> ساخت کانفیگ اختصاصی`;
                     return;
                 }
 
-                await appendLog(`> اسکن گره‌های فعال شبکه... تعداد ${lines.length} مسیر یافت شد.`, "#f59e0b", 120);
+                // ۴. جدا کردن تعداد کانفیگ درخواستی کاربر (چون فایل قبل‌تر بر اساس پینگ مرتب شده)
+                let matchedConfigs = allConfigs.slice(0, count);
 
-                let matchedConfigs = [];
-                const BATCH_SIZE = 10;
+                await appendLog(`> [SEVEN AI] تعداد ${matchedConfigs.length} کانفیگ برتر با پینگ سروری واقعی استخراج شد!`, "#10b981", 100);
 
-                for (let i = 0; i < lines.length; i += BATCH_SIZE) {
-                    if (matchedConfigs.length >= count) break;
-
-                    const batch = lines.slice(i, i + BATCH_SIZE);
-                    const batchPromises = batch.map(async (line) => {
-                        const config = line.trim();
-                        const host = config.includes('@') ? config.split('@')[1].split(':')[0] : '1.1.1.1';
-                        const pingResult = await getRealPing(host);
-                        return { config, host, ...pingResult };
-                    });
-
-                    const batchResults = await Promise.all(batchPromises);
-                    const validNodes = batchResults.filter(c => !c.isTimeout && c.ping <= 800);
-                    matchedConfigs.push(...validNodes);
-
-                    await appendLog(`> تست پینگ گره [${matchedConfigs.length}/${count}] -> پاسخ‌دهی پایدار OK`, "#38bdf8", 80);
-                }
-
-                if (matchedConfigs.length < count) {
-                    const remainingNeeded = count - matchedConfigs.length;
-                    const fallbackBatch = lines.slice(0, remainingNeeded).map(line => {
-                        const config = line.trim();
-                        const host = config.includes('@') ? config.split('@')[1].split(':')[0] : '1.1.1.1';
-                        return { config, host, ping: 9999, isTimeout: true };
-                    });
-                    matchedConfigs.push(...fallbackBatch);
-                }
-
-                matchedConfigs.sort((a, b) => a.ping - b.ping);
-                matchedConfigs = matchedConfigs.slice(0, count);
-
-                await appendLog("> [SEVEN AI] در حال آنالیز پویای دسترسی به سرویس‌ها...", "#f59e0b", 150);
-
+                // بررسی دسترسی به سرویس‌ها
                 const services = await loadServicesConfig();
                 const testedServices = [];
 
                 for (const service of services) {
                     const isOk = await checkSiteFavicon(service.url);
                     testedServices.push({ ...service, isOk });
-
-                    const statusText = isOk ? '<b style="color:#10b981">باز می‌کند ✅</b>' : '<b style="color:#ef4444">مسدود ❌</b>';
-                    await appendLog(`> [تست ${service.name}]: ${statusText}`, "#a7f3d0", 100);
                 }
-
-                await appendLog("> [SEVEN AI] ساخت کانفیگ با موفقیت به پایان رسید!", "#10b981", 100);
 
                 const fullConfigsList = matchedConfigs.map(item => {
                     let raw = item.config.split('#')[0];
@@ -947,38 +919,33 @@
 
                 resultsDiv.innerHTML = "";
 
+                // دکمه کپی همگانی
                 const copyAllBtn = document.createElement('button');
                 copyAllBtn.className = 'btn-copy-all';
-                copyAllBtn.innerHTML = `<i class="fa-solid fa-copy"></i> کپی یکجای تمامی کانفیگ‌ها (${count} عدد)`;
+                copyAllBtn.innerHTML = `<i class="fa-solid fa-copy"></i> کپی یکجای تمامی کانفیگ‌ها (${matchedConfigs.length} عدد)`;
                 copyAllBtn.onclick = () => {
                     navigator.clipboard.writeText(fullConfigsList.join('\n'));
-                    alert(`${count} کانفیگ به صورت یکجا کپی شد! می‌توانید وارد V2Ray کنید.`);
+                    alert(`${matchedConfigs.length} کانفیگ کپی شد!`);
                 };
                 resultsDiv.appendChild(copyAllBtn);
 
+                // نشان‌های سرویس‌های فعال
                 const okServices = testedServices.filter(s => s.isOk);
                 const mainBadges = okServices.slice(0, 4);
-                const remainingCount = okServices.length - 4;
-
                 let badgesHtml = mainBadges.map(s => `
                     <span class="service-icon ok" title="${s.name} باز می‌شود">
                         <i class="${s.iconClass}"></i>
                     </span>
                 `).join('');
 
-                if (remainingCount > 0) {
-                    const moreNames = okServices.slice(4).map(s => s.name).join('، ');
-                    badgesHtml += `<span class="more-badge" title="سایر سرویس‌های باز: ${moreNames}">+${remainingCount}</span>`;
-                }
-
+                // ساخت کارت برای هر کانفیگ بر اساس پینگ واقعی سرور
                 matchedConfigs.forEach((item, idx) => {
                     const finalConfigStr = fullConfigsList[idx];
                     const badgeId = `pingBadge_${idx}`;
-
                     const card = document.createElement('div');
                     card.className = 'config-card-compact';
 
-                    const isTimeout = item.isTimeout;
+                    const isTimeout = item.isTimeout || item.ping >= 9999;
                     const badgeBg = isTimeout ? '#ef4444' : '#10b981';
                     const pingLabel = isTimeout ? 'Timeout' : `${item.ping} ms`;
 
@@ -988,14 +955,8 @@
                             <span class="config-code-preview">${finalConfigStr}</span>
                         </div>
                         <div class="config-actions">
-                            <div class="service-badges">
-                                ${badgesHtml}
-                            </div>
-
+                            <div class="service-badges">${badgesHtml}</div>
                             <span class="ping-pill" id="${badgeId}" style="background:${badgeBg}">${pingLabel}</span>
-                            <button class="btn-action-sm" title="تست پینگ مجدد" onclick="window.reTestSinglePing('${item.host}', '${badgeId}')">
-                                <i class="fa-solid fa-rotate-right"></i>
-                            </button>
                             <button class="btn-action-sm" title="کپی" onclick="navigator.clipboard.writeText('${finalConfigStr}'); alert('کانفیگ کپی شد!');">
                                 <i class="fa-regular fa-copy"></i>
                             </button>

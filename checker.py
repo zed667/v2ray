@@ -2,23 +2,36 @@ import json
 import re
 import socket
 import time
+from urllib.parse import unquote, urlparse
 
 
 def get_tcp_ping(host, port, timeout=2):
   start = time.time()
   try:
-    sock = socket.create_connection((host, int(port)), timeout=timeout)
+    # حل دامنه به IP
+    ip = socket.gethostbyname(host)
+    sock = socket.create_connection((ip, int(port)), timeout=timeout)
     sock.close()
     return int((time.time() - start) * 1000)
   except Exception:
     return None
 
 
-def extract_host_port(config):
-  # استخراج هاسـت و پورت از لینک‌های vless / trojan / vmess
-  match = re.search(r'@([^:]+):(\d+)', config)
-  if match:
-    return match.group(1), match.group(2)
+def parse_config(config_str):
+  try:
+    config_str = config_str.strip()
+    if not config_str:
+      return None, None
+
+    if config_str.startswith(('vless://', 'trojan://')):
+      # استخراج هاسـت و پورت
+      parts = config_str.split('@')
+      if len(parts) > 1:
+        host_port = parts[1].split('?')[0].split('#')[0]
+        host, port = host_port.split(':')
+        return host.strip(), int(port)
+  except Exception:
+    pass
   return None, None
 
 
@@ -33,13 +46,11 @@ def main():
   results = []
   for line in lines:
     config = line.strip()
-    if not config:
-      continue
+    host, port = parse_config(config)
 
-    host, port = extract_host_port(config)
     if host and port:
       ping = get_tcp_ping(host, port)
-      if ping is not None:
+      if ping is not None and ping < 2500:
         results.append({
             'config': config,
             'host': host,
@@ -47,7 +58,7 @@ def main():
             'isTimeout': False,
         })
 
-  # مرتب‌سازی بر اساس بهترین پینگ
+  # مرتب‌سازی بر اساس کمترین پینگ
   results.sort(key=lambda x: x['ping'])
 
   with open('configs.json', 'w', encoding='utf-8') as f:
