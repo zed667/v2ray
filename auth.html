@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود / ثبت نام | پنل Ghost V2Ray</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .auth-header h2 {
+            margin: 10px 0 5px;
+            font-size: 1.5rem;
+            color: #0f172a;
+        }
+
+        .auth-header p {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .input-group input {
+            padding-right: 42px;
+        }
+
+        .btn-google {
+            background: #ffffff;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            margin-top: 12px;
+        }
+
+        .btn-google:hover {
+            background: #f8fafc;
+        }
+
+        /* Notification Modal with Animations */
+        .toast-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .toast-box {
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            width: 280px;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
+        }
+
+        .icon-success {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .icon-error {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <i class="fa-solid fa-ghost" style="font-size: 2.5rem; color: #6366f1;"></i>
+            <h2 id="authTitle">ورود به حساب کاربری</h2>
+            <p id="authSubtitle">جهت دسترسی به پنل، مشخصات خود را وارد کنید</p>
+        </div>
+
+        <div id="nameGroup" class="input-group" style="display: none;">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="displayName" placeholder="نام و نام خانوادگی">
+        </div>
+
+        <div class="input-group">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="email" placeholder="آدرس ایمیل">
+        </div>
+
+        <div class="input-group">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="password" placeholder="کلمه عبور">
+        </div>
+
+        <div id="confirmPassGroup" class="input-group" style="display: none;">
+            <i class="fa-solid fa-shield-check"></i>
+            <input type="password" id="confirmPassword" placeholder="تکرار کلمه عبور">
+        </div>
+
+        <button class="btn btn-primary" id="authBtn">ورود به سیستم</button>
+        <button class="btn btn-google" id="googleBtn"><i class="fa-brands fa-google" style="color:#ea4335;"></i> ورود با
+            حساب گوگل</button>
+
+        <p style="text-align: center; margin-top: 20px; cursor: pointer; color: #6366f1; font-weight: bold; font-size: 0.9rem;"
+            id="toggleAuth">
+            حساب ندارید؟ ثبت نام کنید
+        </p>
+    </div>
+
+    <!-- Status Popup Modal -->
+    <div class="toast-overlay" id="toastOverlay">
+        <div class="toast-box">
+            <div id="toastIcon" class="icon-circle"></div>
+            <h4 id="toastTitle" style="margin: 5px 0;"></h4>
+            <p id="toastMessage" style="font-size: 0.8rem; color: #64748b; margin-top: 5px;"></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, googleProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, db, doc, setDoc } from './firebase.js';
+        import { updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        let isLogin = true;
+
+        const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const authBtn = document.getElementById('authBtn');
+        const toggleAuth = document.getElementById('toggleAuth');
+        const nameGroup = document.getElementById('nameGroup');
+        const confirmPassGroup = document.getElementById('confirmPassGroup');
+
+        function showStatus(isSuccess, title, message, redirect = false) {
+            const overlay = document.getElementById('toastOverlay');
+            const icon = document.getElementById('toastIcon');
+
+            if (isSuccess) {
+                icon.className = "icon-circle icon-success";
+                icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+            } else {
+                icon.className = "icon-circle icon-error";
+                icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            }
+
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMessage').innerText = message;
+            overlay.style.display = 'flex';
+
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                if (redirect) window.location.href = "index.html";
+            }, 1800);
+        }
+
+        toggleAuth.addEventListener('click', () => {
+            isLogin = !isLogin;
+            authTitle.innerText = isLogin ? 'ورود به حساب کاربری' : 'ساخت حساب جدید';
+            authSubtitle.innerText = isLogin ? 'جهت دسترسی به پنل، مشخصات خود را وارد کنید' : 'اطلاعات خود را برای ثبت‌نام وارد کنید';
+            authBtn.innerText = isLogin ? 'ورود به سیستم' : 'ثبت نام حساب جدید';
+            toggleAuth.innerText = isLogin ? 'حساب ندارید؟ ثبت نام کنید' : 'حساب دارید؟ وارد شوید';
+
+            nameGroup.style.display = isLogin ? 'none' : 'block';
+            confirmPassGroup.style.display = isLogin ? 'none' : 'block';
+        });
+
+        authBtn.addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+
+            if (!email || !pass) {
+                showStatus(false, "خطا", "لطفاً تمامی فیلدها را پر کنید.");
+                return;
+            }
+
+            if (!isLogin) {
+                const name = document.getElementById('displayName').value.trim();
+                const confirmPass = document.getElementById('confirmPassword').value;
+
+                if (!name) {
+                    showStatus(false, "خطا", "لطفاً نام خود را وارد کنید.");
+                    return;
+                }
+                if (pass !== confirmPass) {
+                    showStatus(false, "خطا", "رمز عبور و تکرار آن یکسان نیستند.");
+                    return;
+                }
+            }
+
+            try {
+                if (isLogin) {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                    showStatus(true, "ورود موفقیت‌آمیز", "در حال انتقال به پنل...", true);
+                } else {
+                    const name = document.getElementById('displayName').value.trim();
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                    await updateProfile(userCredential.user, { displayName: name });
+
+                    // ایجاد اولیه فقط برای حساب‌های تازه ساخته شده
+                    const userRef = doc(db, 'users', userCredential.user.uid);
+                    await setDoc(userRef, {
+                        email: email,
+                        isVip: false,
+                        coins: 5,
+                        isAdmin: false
+                    }, { merge: true }); // استفاده از merge برای جلوگیری از اوررایت کامل
+
+                    showStatus(true, "ثبت‌نام موفق", "حساب شما ایجاد شد!", true);
+                }
+            } catch (err) {
+                showStatus(false, "خطا در احراز هویت", err.message);
+            }
+        });
+
+        document.getElementById('googleBtn').addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, googleProvider);
+                showStatus(true, "ورود موفق با گوگل", "خوش آمدید!", true);
+            } catch (err) {
+                showStatus(false, "خطا در ورود با گوگل", err.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost Admin | پنل مدیریت ارشد</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --accent-blue: #38bdf8;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-purple: #8b5cf6;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .admin-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .admin-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .back-link:hover { color: #fff; }
+
+        /* بخش جستجو و لیست کاربران */
+        .panel-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 12px;
+            background: #090d16;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        .users-scroll-box {
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: #090d16;
+        }
+
+        .user-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .user-item:hover { background: #1e293b; }
+        .user-item.selected {
+            background: rgba(56, 189, 248, 0.15);
+            border-right: 4px solid var(--accent-blue);
+        }
+
+        .user-item-info strong { display: block; font-size: 0.88rem; color: #f8fafc; }
+        .user-item-info small { color: #94a3b8; font-size: 0.75rem; }
+
+        /* اکشن پنل کاربر انتخاب شده */
+        .action-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .action-header {
+            background: #090d16;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media(max-width: 600px) { .action-grid { grid-template-columns: 1fr; } }
+
+        .action-box {
+            background: #090d16;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .action-box h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vip-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-opt {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-opt:hover { background: var(--accent-amber); color: #0f172a; }
+
+        .coin-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .coin-input-group input {
+            flex: 1;
+            padding: 8px 12px;
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+
+        .btn-submit-coins {
+            background: var(--accent-green);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* جدول کاربران VIP فعال */
+        .vip-list-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 1rem;
+            color: var(--accent-amber);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vip-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .vip-table th, .vip-table td {
+            padding: 10px 12px;
+            text-align: right;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .vip-table th { color: #64748b; font-weight: normal; }
+        .badge-active { background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 3px 8px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <h2><i class="fa-solid fa-user-shield"></i> پنل مدیریت ارشد Ghost</h2>
+            <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-right"></i> بازگشت به سایت</a>
+        </div>
+
+        <!-- Main User Selector Panel -->
+        <div class="panel-card">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="جستجو بر اساس ایمیل کاربر...">
+            </div>
+
+            <div class="users-scroll-box" id="usersScrollBox">
+                <div style="padding: 15px; text-align: center; color: #64748b;">در حال بارگذاری کاربران...</div>
+            </div>
+        </div>
+
+        <!-- Dynamic Action Panel -->
+        <div class="panel-card action-panel" id="actionPanel">
+            <div class="action-header" id="selectedUserHeader">
+                در حال ویرایش کاربر: ---
+            </div>
+
+            <div class="action-grid">
+                <!-- افزودن سکه سفارشی -->
+                <div class="action-box">
+                    <h4><i class="fa-solid fa-coins" style="color:var(--accent-amber)"></i> افزایش سکه دستی</h4>
+                    <div class="coin-input-group">
+                        <input type="number" id="customCoinAmount" placeholder="تعداد سکه (مثلاً 100)" min="1">
+                        <button class="btn-submit-coins" onclick="addCustomCoins()"><i class="fa-solid fa-plus"></i> واریز</button>
+                    </div>
+                </div>
+
+                <!-- تمدید/اعطای VIP (فقط در صورتی ظاهر می‌شود که کاربر از قبل VIP نباشد) -->
+                <div class="action-box" id="vipActionBox">
+                    <h4><i class="fa-solid fa-crown" style="color:var(--accent-amber)"></i> اعطای اشتراک VIP</h4>
+                    <div class="vip-options">
+                        <button class="btn-opt" onclick="setVipDuration(7)">۷ روزه</button>
+                        <button class="btn-opt" onclick="setVipDuration(30)">۱ ماهه</button>
+                        <button class="btn-opt" onclick="setVipDuration(90)">۳ ماهه</button>
+                        <button class="btn-opt" onclick="setVipDuration(365)">۱۲ ماهه</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIP Active Users List -->
+        <div class="panel-card vip-list-card">
+            <h3><i class="fa-solid fa-gem"></i> کاربران دارای اشتراک VIP فعال</h3>
+            <div style="overflow-x: auto;">
+                <table class="vip-table">
+                    <thead>
+                        <tr>
+                            <th>ایمیل کاربر</th>
+                            <th>موجودی سکه</th>
+                            <th>تاریخ انقضا VIP</th>
+                            <th>وضعیت</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vipTableBody">
+                        <tr><td colspan="4" style="text-align:center; color:#64748b;">در حال بررسی...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, collection, getDocs, doc, updateDoc, increment } from './firebase.js';
+
+        let allUsers = [];
+        let selectedUserId = null;
+        let selectedUserData = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user || user.email !== 'aqayghost@gmail.com') {
+                alert("شما دسترسی ادمین ندارید!");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            await loadAllUsers();
+        });
+
+        async function loadAllUsers() {
+            const querySnapshot = await getDocs(collection(db, "users"));
+            allUsers = [];
+            
+            querySnapshot.forEach((docSnap) => {
+                allUsers.push({ id: docSnap.id, ...docSnap.data() });
+            });
+
+            renderUsersList(allUsers);
+            renderVipTable(allUsers);
+        }
+
+        function renderUsersList(usersList) {
+            const box = document.getElementById('usersScrollBox');
+            box.innerHTML = "";
+
+            if (usersList.length === 0) {
+                box.innerHTML = `<div style="padding:15px; text-align:center; color:#64748b;">کاربری یافت نشد.</div>`;
+                return;
+            }
+
+            usersList.forEach(u => {
+                const now = new Date().getTime();
+                const isVipValid = u.isVip && u.vipExpiresAt && u.vipExpiresAt > now;
+
+                const div = document.createElement('div');
+                div.className = `user-item ${selectedUserId === u.id ? 'selected' : ''}`;
+                div.onclick = () => selectUser(u);
+
+                div.innerHTML = `
+                    <div class="user-item-info">
+                        <strong>${u.email || 'کاربر بدون ایمیل'}</strong>
+                        <small>سکه: ${u.coins || 0} | وضعیت: ${isVipValid ? '<b style="color:var(--accent-amber)">VIP</b>' : 'عادی'}</small>
+                    </div>
+                    <i class="fa-solid fa-chevron-left" style="font-size:0.75rem; color:#64748b;"></i>
+                `;
+                box.appendChild(div);
+            });
+        }
+
+        function selectUser(user) {
+            selectedUserId = user.id;
+            selectedUserData = user;
+
+            // بروزرسانی کلاس انتخاب شده در لیست
+            renderUsersList(allUsers);
+
+            const actionPanel = document.getElementById('actionPanel');
+            const selectedUserHeader = document.getElementById('selectedUserHeader');
+            const vipActionBox = document.getElementById('vipActionBox');
+
+            const now = new Date().getTime();
+            const isVipValid = user.isVip && user.vipExpiresAt && user.vipExpiresAt > now;
+
+            selectedUserHeader.innerHTML = `<i class="fa-solid fa-user-check"></i> انتخاب شده: <b>${user.email}</b> (موجودی فعلی: ${user.coins || 0} سکه)`;
+            actionPanel.style.display = 'block';
+
+            // شرط خواسته شده: اگر طرف VIP بود از قبل، بخش اعطای VIP مخفی بشه
+            if (isVipValid) {
+                vipActionBox.style.display = 'none';
+            } else {
+                vipActionBox.style.display = 'block';
+            }
+        }
+
+        // جستجوی زنده
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allUsers.filter(u => u.email && u.email.toLowerCase().includes(term));
+            renderUsersList(filtered);
+        });
+
+        // افزودن سکه سفارشی
+        window.addCustomCoins = async () => {
+            const amountInput = document.getElementById('customCoinAmount');
+            const amount = parseInt(amountInput.value);
+
+            if (!selectedUserId || !amount || amount <= 0) {
+                alert("لطفاً تعداد سکه معتبری وارد کنید!");
+                return;
+            }
+
+            try {
+                await updateDoc(doc(db, "users", selectedUserId), {
+                    coins: increment(amount)
+                });
+
+                alert(`${amount} سکه با موفقیت به کاربر واریز شد!`);
+                amountInput.value = "";
+                await loadAllUsers();
+                // بروزرسانی پنل اکشن
+                const updatedUser = allUsers.find(u => u.id === selectedUserId);
+                if (updatedUser) selectUser(updatedUser);
+
+            } catch (err) {
+                alert("خطا در واریز سکه: " + err.message);
+            }
+        };
+
+        // اعطای VIP با روزهای مختلف
+        window.setVipDuration = async (days) => {
+            if (!selectedUserId) return;
+
+            const expirationDate = new Date().getTime() + (days * 24 * 60 * 60 * 1000);
+
+            try {
+                await updateDoc(doc(db, "users", selectedUserId), {
+                    isVip: true,
+                    vipExpiresAt: expirationDate
+                });
+
+                alert(`اشتراک VIP ${days} روزه برای کاربر فعال شد!`);
+                await loadAllUsers();
+                const updatedUser = allUsers.find(u => u.id === selectedUserId);
+                if (updatedUser) selectUser(updatedUser);
+
+            } catch (err) {
+                alert("خطا در ارتقای VIP: " + err.message);
+            }
+        };
+
+        // رندر جدول کاربران VIP فعال
+        function renderVipTable(users) {
+            const tbody = document.getElementById('vipTableBody');
+            tbody.innerHTML = "";
+
+            const now = new Date().getTime();
+            const vipUsers = users.filter(u => u.isVip && u.vipExpiresAt && u.vipExpiresAt > now);
+
+            if (vipUsers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b;">هیچ کاربر VIP فعالی وجود ندارد.</td></tr>`;
+                return;
+            }
+
+            vipUsers.forEach(u => {
+                const expDate = new Date(u.vipExpiresAt).toLocaleDateString('fa-IR');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${u.email}</b></td>
+                    <td>${u.coins || 0} سکه</td>
+                    <td>${expDate}</td>
+                    <td><span class="badge-active">فعال</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>

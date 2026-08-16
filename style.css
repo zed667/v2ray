@@ -1,0 +1,243 @@
+:root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --accent-orange: #f97316;
+    --accent-green: #10b981;
+    --accent-pink: #ec4899;
+    --vip-gold: #f59e0b;
+    --text: #0f172a;
+    --text-sub: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+* { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+body { background: #f1f5f9; color: var(--text); margin: 0; padding: 0; direction: rtl; display: flex; justify-content: center; }
+
+.app-viewport { width: 100%; max-width: 480px; min-height: 100vh; background: var(--bg); position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+
+/* Header & Profile Bar */
+.top-nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--border); }
+.brand { font-weight: 800; font-size: 1.2rem; background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.user-avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--primary); cursor: pointer; transition: transform 0.2s; object-fit: cover; }
+.user-avatar:active { transform: scale(0.92); }
+
+/* Main UI Elements */
+.content { padding: 20px; flex-grow: 1; }
+.card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+
+/* Compact Menu Controls */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { margin-bottom: 14px; }
+label { font-size: 0.85rem; font-weight: 700; color: var(--text-sub); display: block; margin-bottom: 6px; }
+select, input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: #f8fafc; font-size: 0.95rem; color: var(--text); outline: none; }
+select:focus, input:focus { border-color: var(--primary); background: #fff; }
+
+/* Modern Gradient Buttons */
+.btn { width: 100%; padding: 14px; border-radius: 14px; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
+.btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3); }
+.btn-primary:active { transform: scale(0.98); }
+
+/* Modal / Drawer (ChatGPT Style Settings Panel) */
+.drawer { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 100; display: none; justify-content: flex-end; }
+.drawer.open { display: flex; }
+.drawer-content { width: 100%; max-width: 420px; height: 100%; background: #fff; padding: 24px; display: flex; flex-direction: column; animation: slideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes slideLeft { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+
+.profile-header { text-align: center; margin-bottom: 24px; }
+.profile-header img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 8px; }
+.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.badge-vip { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+.badge-free { background: #e2e8f0; color: #475569; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+
+/* Config Cards Output */
+.config-item { background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-top: 12px; }
+.config-text { font-family: monospace; font-size: 0.75rem; word-break: break-all; direction: ltr; text-align: left; background: #fff; padding: 8px; border-radius: 8px; border: 1px dashed var(--border); margin: 8px 0; }
+.ping-badge { font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; color: white; display: inline-block; }
+.copy-btn { background: var(--accent-green); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; float: left; }
+
+/* Locked & VIP Style Options */
+select option:disabled {
+    color: #94a3b8 !important;
+    background: #f1f5f9;
+}
+
+.badge-free {
+    background: #e2e8f0;
+    color: #475569;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.badge-vip {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* اضافه کردن به انتهای فایل style.css */
+
+/* Profile Drawer Modern Style */
+.profile-header-card {
+    position: relative;
+    text-align: center;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    padding: 30px 20px 20px;
+    border-radius: 20px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.close-drawer-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.avatar-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.avatar-wrapper img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    object-fit: cover;
+}
+
+.status-dot {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 14px;
+    height: 14px;
+    background-color: #10b981;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+#drawerName { margin: 0; font-size: 1.2rem; font-weight: bold; }
+#drawerEmail { margin: 4px 0 0; font-size: 0.8rem; opacity: 0.85; }
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.stat-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.stat-label { font-size: 0.75rem; color: #64748b; font-weight: bold; }
+.coin-amount { font-weight: bold; color: #f59e0b; font-size: 1rem; }
+
+.btn-shop-upgrade {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    text-decoration: none;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.admin-link {
+    color: #6366f1;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.btn-logout {
+    background: #fee2e2;
+    color: #ef4444;
+}
+.btn-logout:hover {
+    background: #fca5a5;
+}
+
+.terminal-accordion {
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: rgba(15, 23, 42, 0.5);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.terminal-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #0f172a;
+    cursor: pointer;
+    font-size: 0.78rem;
+    color: #38bdf8;
+    user-select: none;
+    border-bottom: 1px solid transparent;
+}
+
+.terminal-accordion.open .terminal-accordion-header {
+    border-bottom-color: #1e293b;
+}
+
+.terminal-accordion-header .arrow-icon {
+    transition: transform 0.3s ease;
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.terminal-accordion.open .arrow-icon {
+    transform: rotate(180deg);
+    color: #38bdf8;
+}
+
+.terminal-accordion-body {
+    display: none;
+    padding: 10px;
+    font-size: 0.72rem;
+    line-height: 1.7;
+    color: #a7f3d0;
+}
+
+.terminal-accordion.open .terminal-accordion-body {
+    display: block;
+}
+
+.help-icon {
+    color: #38bdf8;
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-right: 4px;
+    transition: transform 0.2s;
+}
+.help-icon:hover {
+    transform: scale(1.2);
+    color: #0284c7;
+}

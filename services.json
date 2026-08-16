@@ -1,0 +1,24 @@
+{
+    "targetServices": [
+      { "id": "youtube", "name": "یوتیوب", "url": "https://www.youtube.com", "iconClass": "fa-brands fa-youtube" },
+      { "id": "instagram", "name": "اینستاگرام", "url": "https://www.instagram.com", "iconClass": "fa-brands fa-instagram" },
+      { "id": "telegram", "name": "تلگرام", "url": "https://web.telegram.org", "iconClass": "fa-brands fa-telegram" },
+      { "id": "x", "name": "تویتر / X", "url": "https://x.com", "iconClass": "fa-brands fa-x-twitter" },
+      { "id": "whatsapp", "name": "واتساپ", "url": "https://web.whatsapp.com", "iconClass": "fa-brands fa-whatsapp" },
+      { "id": "chatgpt", "name": "ChatGPT", "url": "https://chatgpt.com", "iconClass": "fa-solid fa-robot" },
+      { "id": "gemini", "name": "Gemini", "url": "https://gemini.google.com", "iconClass": "fa-solid fa-sparkles" },
+      { "id": "claude", "name": "Claude AI", "url": "https://claude.ai", "iconClass": "fa-solid fa-brain" },
+      { "id": "github", "name": "گیت‌هاب", "url": "https://github.com", "iconClass": "fa-brands fa-github" },
+      { "id": "google", "name": "گوگل", "url": "https://www.google.com", "iconClass": "fa-brands fa-google" },
+      { "id": "spotify", "name": "اسپاتیفای", "url": "https://www.spotify.com", "iconClass": "fa-brands fa-spotify" },
+      { "id": "netflix", "name": "نتفلیکس", "url": "https://www.netflix.com", "iconClass": "fa-solid fa-tv" },
+      { "id": "twitch", "name": "توییچ", "url": "https://www.twitch.tv", "iconClass": "fa-brands fa-twitch" },
+      { "id": "discord", "name": "دیسکورد", "url": "https://discord.com", "iconClass": "fa-brands fa-discord" },
+      { "id": "pinterest", "name": "پینترست", "url": "https://www.pinterest.com", "iconClass": "fa-brands fa-pinterest" },
+      { "id": "reddit", "name": "ردیت", "url": "https://www.reddit.com", "iconClass": "fa-brands fa-reddit" },
+      { "id": "linkedin", "name": "لینکدین", "url": "https://www.linkedin.com", "iconClass": "fa-brands fa-linkedin" },
+      { "id": "wikipedia", "name": "ویکی‌پدیا", "url": "https://www.wikipedia.org", "iconClass": "fa-brands fa-wikipedia-w" },
+      { "id": "binance", "name": "بایننس", "url": "https://www.binance.com", "iconClass": "fa-solid fa-coins" },
+      { "id": "steam", "name": "استیم", "url": "https://store.steampowered.com", "iconClass": "fa-brands fa-steam" }
+    ]
+  }

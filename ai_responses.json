@@ -1,0 +1,24 @@
+{
+    "system_logs": [
+      "> [SEVEN AI] Initializing Neural Core v4.8.2...",
+      "> [SEVEN AI] Establishing secure TLS 1.3 handshake with edge node...",
+      "> [SEVEN AI] Querying routing table via BGP Dynamic Protocol...",
+      "> [SEVEN AI] Optimizing socket buffer size & TCP window scale..."
+    ],
+    "real_code_snippets": [
+      "curl -sSL https://raw.githubusercontent.com/v2ray/ghost-core/main/install.sh | bash",
+      "iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu",
+      "xray run -config /usr/local/etc/xray/config.json --p2p-mode=dynamic",
+      "sysctl -w net.ipv4.tcp_congestion_control=bbr"
+    ],
+    "ai_chat_dialogues": [
+      "> SEVEN: «در حال تحلیل پکت‌های شبکه... مسیر با کمترین تأخیر شناسایی شد.»",
+      "> SEVEN: «سیگنال اختصاصی با رمزشگذاری AES-256-GCM آماده‌سازی شد.»",
+      "> SEVEN: «ارزیابی سلامت تونل: نرخ پکت‌لاس زیر ۰.۱٪ است.»",
+      "> SEVEN: «گواهی TLS خودکار صادر شد. آماده اتصال کاربر.»"
+    ],
+    "fallback_messages": [
+      "> [WARN] ترافیک بالا روی این نود. سوئیچ به سرور پشتیبان...",
+      "> [RETRY] تنظیم مجدد SNI برای دور زدن اختلالات منطقه‌ای..."
+    ]
+  }

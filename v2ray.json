@@ -1,0 +1,8 @@
+{
+    "configs": {
+      "ghost": {
+        "file": "ghost.txt",
+        "template": "vless://46a2a0c2-3e2b-426b-9c7a-9932d0df4782@1.1.1.1:443?type=ws&security=tls&path=%2F#Ghost-Config"
+      }
+    }
+  }

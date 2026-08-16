@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost V2Ray Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .vip-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .avatar-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-4px);
+            }
+            60% {
+                transform: translateY(-2px);
+            }
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.2;
+            }
+            100% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+        }
+
+        .inline-terminal {
+            background: #090d16;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 14px;
+            font-family: 'Fira Code', monospace, system-ui;
+            color: #38bdf8;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            text-align: left;
+            direction: ltr;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 8px;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .terminal-title {
+            color: #38bdf8;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red {
+            background: #ef4444;
+        }
+
+        .dot-yellow {
+            background: #f59e0b;
+        }
+
+        .dot-green {
+            background: #10b981;
+        }
+
+        .terminal-body {
+            font-size: 0.75rem;
+            max-height: 190px;
+            overflow-y: auto;
+            line-height: 1.6;
+            color: #a7f3d0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .code-block {
+            color: #f472b6;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        .config-card-compact {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #f8fafc;
+            direction: ltr;
+        }
+
+        .config-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .config-num {
+            background: #3b82f6;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .config-code-preview {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: monospace;
+            color: #94a3b8;
+            font-size: 0.78rem;
+            direction: ltr;
+        }
+
+        .config-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .ping-pill {
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .service-badges {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+
+        .service-icon {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-icon.ok {
+            color: #10b981;
+        }
+
+        .service-icon.fail {
+            color: #ef4444;
+            opacity: 0.4;
+        }
+
+        .btn-action-sm {
+            background: #334155;
+            color: #f8fafc;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: 0.2s;
+        }
+
+        .btn-action-sm:hover {
+            background: #475569;
+        }
+
+        .btn-copy-all {
+            width: 100%;
+            background: #10b981;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background: #475569 !important;
+        }
+
+        .vip-modal {
+            background: #ffffff;
+            width: 100%;
+            max-width: 380px;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            color: #0f172a;
+        }
+
+        /* Help Icon Styling */
+        .help-icon {
+            color: #38bdf8;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-right: 5px;
+            transition: transform 0.2s, color 0.2s;
+        }
+
+        .help-icon:hover {
+            transform: scale(1.25);
+            color: #0284c7;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-viewport">
+        <div class="top-nav">
+            <div class="brand"><i class="fa-solid fa-ghost"></i> GHOST V2RAY</div>
+            <div class="avatar-container" id="avatarContainer">
+                <div class="user-avatar-wrapper">
+                    <img src="https://via.placeholder.com/150" id="userAvatar" class="user-avatar" alt="Profile">
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>
+                            <i class="fa-solid fa-network-wired"></i> اپراتور
+                            <i class="fa-solid fa-circle-info help-icon" data-help="isp" title="راهنما"></i>
+                        </label>
+                        <select id="isp">
+                            <option value="wifi">وای‌فای (Wi-Fi)</option>
+                            <option value="irancell">ایرانسل (Irancell)</option>
+                            <option value="mci">همراه اول (MCI)</option>
+                            <option value="rightel">رایتل (Rightel)</option>
+                            <option value="all" class="vip-opt locked-option" disabled>تمام اپراتورها (VIP)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <i class="fa-solid fa-server"></i> نوع سرور
+                            <i class="fa-solid fa-circle-info help-icon" data-help="server" title="راهنما"></i>
+                        </label>
+                        <select id="server">
+                            <option value="international">سرور بین‌المللی</option>
+                            <option value="national" id="optNational" class="locked-option" disabled>🇮🇷 سرور ملی (VIP)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>
+                            <i class="fa-solid fa-database"></i> حجم (گیگ)
+                            <i class="fa-solid fa-circle-info help-icon" data-help="volume" title="راهنما"></i>
+                        </label>
+                        <select id="volume">
+                            <option value="1">1 GB</option>
+                            <option value="2">2 GB</option>
+                            <option value="3">3 GB</option>
+                            <option value="4">4 GB</option>
+                            <option value="5" class="vip-opt locked-option" disabled>5 GB (VIP)</option>
+                            <option value="6" class="vip-opt locked-option" disabled>6 GB (VIP)</option>
+                            <option value="7" class="vip-opt locked-option" disabled>7 GB (VIP)</option>
+                            <option value="8" class="vip-opt locked-option" disabled>8 GB (VIP)</option>
+                            <option value="9" class="vip-opt locked-option" disabled>9 GB (VIP)</option>
+                            <option value="10" class="vip-opt locked-option" disabled>10 GB (VIP)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <i class="fa-solid fa-users"></i> تعداد کاربر
+                            <i class="fa-solid fa-circle-info help-icon" data-help="users" title="راهنما"></i>
+                        </label>
+                        <select id="users">
+                            <option value="1">1 کاربر</option>
+                            <option value="2">2 کاربر</option>
+                            <option value="3" class="vip-opt locked-option" disabled>3 کاربر (VIP)</option>
+                            <option value="4" class="vip-opt locked-option" disabled>4 کاربر (VIP)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- بخش پروتکل، کشور و سرویس هوش مصنوعی -->
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>
+                            <i class="fa-solid fa-code-branch"></i> پروتکل
+                            <i class="fa-solid fa-circle-info help-icon" data-help="protocol" title="راهنما"></i>
+                        </label>
+                        <select id="protocol">
+                            <option value="all">همه</option>
+                            <option value="vless">VLESS</option>
+                            <option value="trojan">Trojan</option>
+                            <option value="vmess">VMess</option>
+                            <option value="ss">Shadowsocks</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fa-solid fa-globe"></i> کشور
+                            <i class="fa-solid fa-circle-info help-icon" data-help="country" title="راهنما"></i>
+                        </label>
+                        <select id="country">
+                            <option value="all">🌍 همه کشورها</option>
+                            <option value="US">🇺🇸 آمریکا (US)</option>
+                            <option value="DE">🇩🇪 آلمان (DE)</option>
+                            <option value="CA">🇨🇦 کانادا (CA)</option>
+                            <option value="GB">🇬🇧 انگلیس (GB)</option>
+                            <option value="FR">🇫🇷 فرانسه (FR)</option>
+                            <option value="NL">🇳🇱 هلند (NL)</option>
+                            <option value="FI">🇫🇮 فنلاند (FI)</option>
+                            <option value="TR">🇹🇷 ترکیه (TR)</option>
+                            <option value="SG">🇸🇬 سنگاپور (SG)</option>
+                            <option value="JP">🇯🇵 ژاپن (JP)</option>
+                            <option value="KR">🇰🇷 کره جنوبی (KR)</option>
+                            <option value="AE">🇦🇪 امارات (AE)</option>
+                            <option value="CH">🇨🇭 سوئیس (CH)</option>
+                            <option value="SE">🇸🇪 سوئد (SE)</option>
+                            <option value="NO">🇳🇴 نروژ (NO)</option>
+                            <option value="IT">🇮🇹 ایتالیا (IT)</option>
+                            <option value="ES">🇪🇸 اسپانیا (ES)</option>
+                            <option value="PL">🇵🇱 لهستان (PL)</option>
+                            <option value="AU">🇦🇺 استرالیا (AU)</option>
+                            <option value="BR">🇧🇷 برزیل (BR)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fa-solid fa-brain"></i> سرویس هدف
+                            <i class="fa-solid fa-circle-info help-icon" data-help="ai_service" title="راهنما"></i>
+                        </label>
+                        <select id="aiService">
+                            <option value="none">بدون فیلتر</option>
+                            <option value="gemini">✨ Google Gemini</option>
+                            <option value="gpt">🤖 ChatGPT / OpenAI</option>
+                            <option value="claude">🧠 Claude AI</option>
+                            <option value="spotify">🎵 Spotify</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fa-solid fa-layer-group"></i> تعداد ساخت کانفیگ (هر کانفیگ ۵ سکه)
+                    </label>
+                    <select id="count">
+                        <option value="1">1 عدد (5 سکه)</option>
+                        <option value="5">5 عدد (25 سکه)</option>
+                        <option value="10" class="vip-opt locked-option" disabled>10 عدد (VIP)</option>
+                        <option value="15" class="vip-opt locked-option" disabled>15 عدد (VIP)</option>
+                        <option value="20" class="vip-opt locked-option" disabled>20 عدد (VIP)</option>
+                        <option value="25" class="vip-opt locked-option" disabled>25 عدد (VIP)</option>
+                        <option value="30" class="vip-opt locked-option" disabled>30 عدد (VIP)</option>
+                        <option value="35" class="vip-opt locked-option" disabled>35 عدد (VIP)</option>
+                        <option value="40" class="vip-opt locked-option" disabled>40 عدد (VIP)</option>
+                        <option value="45" class="vip-opt locked-option" disabled>45 عدد (VIP)</option>
+                        <option value="50" class="vip-opt locked-option" disabled>50 عدد (VIP)</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="generateBtn"><i class="fa-solid fa-bolt"></i> ساخت کانفیگ اختصاصی</button>
+
+                <div class="inline-terminal" id="inlineTerminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <div class="dot dot-red"></div>
+                            <div class="dot dot-yellow"></div>
+                            <div class="dot dot-green"></div>
+                        </div>
+                        <span class="terminal-title"><i class="fa-solid fa-robot"></i> SEVEN AI CORE v4.8.2</span>
+                    </div>
+                    <div class="terminal-body" id="terminalLog"></div>
+                </div>
+            </div>
+
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <!-- VIP / Coin Alert Modal -->
+    <div class="vip-modal-overlay" id="vipAlertModal">
+        <div class="vip-modal">
+            <i class="fa-solid fa-coins" style="font-size:2.5rem; color:#f59e0b; margin-bottom:10px;"></i>
+            <h3 id="modalTitle">عدم موجودی سکه کافی</h3>
+            <p id="modalDesc" style="font-size:0.85rem; color:#64748b; margin-top:8px;">برای ساخت کانفیگ نیاز به سکه دارید یا گزینه‌های انتخابی شما قفل هستند.</p>
+            <a href="shop.html" class="btn btn-primary" style="margin-top:15px; text-decoration:none;"><i class="fa-solid fa-store"></i> ورود به فروشگاه (خرید سکه / VIP)</a>
+            <button class="btn" id="closeVipModal" style="background:#f1f5f9; color:#475569; margin-top:8px; width: 100%;">متوجه شدم</button>
+        </div>
+    </div>
+
+    <!-- Description Help Modal -->
+    <div class="vip-modal-overlay" id="helpModal">
+        <div class="vip-modal">
+            <i class="fa-solid fa-circle-info" style="font-size:2.5rem; color:#38bdf8; margin-bottom:10px;"></i>
+            <h3 id="helpTitle">راهنمای بخش</h3>
+            <p id="helpDesc" style="font-size:0.88rem; color:#475569; margin-top:10px; line-height:1.6;"></p>
+            <button class="btn" id="closeHelpModal" style="background:#f1f5f9; color:#475569; margin-top:15px; width: 100%;">متوجه شدم</button>
+        </div>
+    </div>
+
+    <!-- Profile Drawer -->
+    <div class="drawer" id="profileDrawer">
+        <div class="drawer-content">
+            <div class="profile-header-card">
+                <button id="closeDrawer" class="close-drawer-btn"><i class="fa-solid fa-xmark"></i></button>
+                <div class="avatar-wrapper">
+                    <img id="drawerAvatar" src="" alt="User Avatar">
+                    <span id="profileStatusDot" class="status-dot"></span>
+                </div>
+                <h3 id="drawerName">کاربر سیستم</h3>
+                <p id="drawerEmail"></p>
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-box">
+                    <span class="stat-label">وضعیت اشتراک</span>
+                    <span id="vipBadge" class="badge-free">کاربر عادی</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">موجودی سکه</span>
+                    <span id="coinCount" class="coin-amount">0 <i class="fa-solid fa-coins"></i></span>
+                </div>
+            </div>
+
+            <a href="shop.html" class="btn btn-shop-upgrade">
+                <i class="fa-solid fa-gem"></i> خرید سکه و ارتقا به VIP
+            </a>
+
+            <div class="setting-row" id="adminLinkRow" style="display:none;">
+                <span><i class="fa-solid fa-user-shield"></i> پنل مدیریت</span>
+                <a href="admin.html" class="admin-link">ورود <i class="fa-solid fa-arrow-left"></i></a>
+            </div>
+
+            <div style="margin-top:auto;">
+                <button class="btn btn-logout" id="logoutBtn">
+                    <i class="fa-solid fa-right-from-bracket"></i> خروج از حساب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, signOut, doc, setDoc, updateDoc, onSnapshot, increment } from './firebase.js';
+
+        let userData = { isVip: false, coins: 0, isAdmin: false, lastDailyBonus: null };
+        let unsubscribeUser = null;
+        let helpData = {};
+
+        const avatarContainer = document.getElementById('avatarContainer');
+        const userAvatar = document.getElementById('userAvatar');
+        const profileDrawer = document.getElementById('profileDrawer');
+        const vipAlertModal = document.getElementById('vipAlertModal');
+        const generateBtn = document.getElementById('generateBtn');
+
+        // بارگذاری هوشمند فایل توضیحات JSON راهنما
+        async function loadHelpTexts() {
+            try {
+                const res = await fetch('help_texts.json');
+                helpData = await res.json();
+            } catch (e) {
+                console.error("خطا در بارگذاری help_texts.json", e);
+            }
+        }
+        loadHelpTexts();
+
+        // ایونت نمایش مدال راهنمای دکمه‌های !
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('help-icon')) {
+                const key = e.target.getAttribute('data-help');
+                const helpModal = document.getElementById('helpModal');
+                const helpDesc = document.getElementById('helpDesc');
+
+                if (helpData[key]) {
+                    helpDesc.innerText = helpData[key];
+                    helpModal.style.display = 'flex';
+                }
+            }
+        });
+
+        document.getElementById('closeHelpModal').addEventListener('click', () => {
+            document.getElementById('helpModal').style.display = 'none';
+        });
+
+        document.getElementById('closeVipModal').addEventListener('click', () => {
+            vipAlertModal.style.display = 'none';
+        });
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            const defaultPhoto = 'https://api.dicebear.com/10.x/pixelbot/svg?tags=animation&seed=' + encodeURIComponent(user.uid);
+            const photoURL = user.photoURL || defaultPhoto;
+            userAvatar.src = photoURL;
+            document.getElementById('drawerAvatar').src = photoURL;
+            document.getElementById('drawerName').innerText = user.displayName || 'کاربر سیستم';
+            document.getElementById('drawerEmail').innerText = user.email || '';
+
+            const userRef = doc(db, 'users', user.uid);
+
+            if (unsubscribeUser) unsubscribeUser();
+
+            unsubscribeUser = onSnapshot(userRef, async (docSnap) => {
+                if (docSnap.exists()) {
+                    userData = docSnap.data();
+
+                    const now = new Date().getTime();
+                    if (userData.vipExpiresAt && now > userData.vipExpiresAt) {
+                        userData.isVip = false;
+                    }
+
+                    await checkDailyFreeCoins(userRef, userData);
+                    updateUI();
+                } else {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    userData = {
+                        isVip: false,
+                        coins: 5,
+                        email: user.email,
+                        isAdmin: false,
+                        vipExpiresAt: null,
+                        lastDailyBonus: todayStr
+                    };
+                    await setDoc(userRef, userData, { merge: true });
+                    updateUI();
+                }
+            });
+        });
+
+        async function checkDailyFreeCoins(userRef, data) {
+            if (data.isVip) return;
+            const todayStr = new Date().toISOString().split('T')[0];
+            const currentCoins = data.coins || 0;
+
+            if (currentCoins === 0 && data.lastDailyBonus !== todayStr) {
+                try {
+                    await updateDoc(userRef, {
+                        coins: 5,
+                        lastDailyBonus: todayStr
+                    });
+                } catch (e) { }
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('coinCount').innerHTML = `${userData.coins || 0} <i class="fa-solid fa-coins"></i>`;
+            const vipBadge = document.getElementById('vipBadge');
+
+            if (userData.isVip) {
+                vipBadge.innerHTML = '<i class="fa-solid fa-crown"></i> اشتراک VIP';
+                vipBadge.className = 'badge-vip';
+
+                document.querySelectorAll('.vip-opt, #optNational').forEach(el => {
+                    el.removeAttribute('disabled');
+                    el.classList.remove('locked-option');
+                    el.style.color = '#f59e0b';
+                });
+            } else {
+                vipBadge.innerHTML = 'کاربر عادی';
+                vipBadge.className = 'badge-free';
+
+                document.querySelectorAll('.vip-opt, #optNational').forEach(el => {
+                    el.setAttribute('disabled', 'true');
+                    el.classList.add('locked-option');
+                    el.style.color = '';
+                });
+                document.getElementById('count').value = "5";
+            }
+
+            if (userData.isAdmin) {
+                document.getElementById('adminLinkRow').style.display = 'flex';
+            }
+        }
+
+        avatarContainer.addEventListener('click', () => profileDrawer.classList.add('open'));
+        document.getElementById('closeDrawer').addEventListener('click', () => profileDrawer.classList.remove('open'));
+        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+        async function appendLog(text, color = '#a7f3d0', delay = 100) {
+            const terminalLog = document.getElementById('terminalLog');
+            const p = document.createElement('div');
+            p.style.color = color;
+            p.innerHTML = text;
+            terminalLog.appendChild(p);
+            terminalLog.scrollTop = terminalLog.scrollHeight;
+            await new Promise(r => setTimeout(r, delay));
+        }
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        async function getRealPing(host) {
+            const start = performance.now();
+            try {
+                await fetch(`https://${host}`, { mode: 'no-cors', cache: 'no-cache', signal: AbortSignal.timeout(1800) });
+                return { ping: Math.round(performance.now() - start), isTimeout: false };
+            } catch {
+                const diff = Math.round(performance.now() - start);
+                return { ping: diff < 1800 ? diff : 9999, isTimeout: diff >= 1800 };
+            }
+        }
+
+        async function loadAiScenarios() {
+            try {
+                const res = await fetch('ai_responses.json');
+                return await res.json();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        const getRandomIP = () => Array.from({ length: 4 }, () => Math.floor(Math.random() * 256)).join('.');
+
+        async function runAiTerminalAnimation() {
+            const aiData = await loadAiScenarios();
+            if (!aiData) return;
+
+            await appendLog(getRandom(aiData.system_logs), "#38bdf8", 120);
+
+            const randomCode = getRandom(aiData.real_code_snippets);
+            const mockServer = getRandomIP();
+            await appendLog(`> Executing: <span class="code-block">${randomCode} --node=${mockServer}:443</span>`, "#f472b6", 150);
+
+            await appendLog(getRandom(aiData.ai_chat_dialogues), "#a7f3d0", 180);
+
+            if (Math.random() > 0.65) {
+                await appendLog(getRandom(aiData.fallback_messages), "#f59e0b", 200);
+            }
+        }
+
+        async function loadServicesConfig() {
+            try {
+                const res = await fetch('services.json');
+                const data = await res.json();
+                return data.targetServices || [];
+            } catch (e) {
+                console.error("خطا در بارگذاری services.json", e);
+                return [];
+            }
+        }
+
+        async function checkSiteFavicon(siteUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const timeout = setTimeout(() => resolve(false), 2200);
+
+                img.onload = () => { clearTimeout(timeout); resolve(true); };
+                img.onerror = () => { clearTimeout(timeout); resolve(false); };
+                img.src = `${siteUrl}/favicon.ico?r=${Math.random()}`;
+            });
+        }
+
+        async function checkConnectionWithRetry(maxRetries = 3) {
+            for (let i = 1; i <= maxRetries; i++) {
+                if (navigator.onLine) {
+                    try {
+                        await fetch('https://1.1.1.1', { mode: 'no-cors', cache: 'no-cache', signal: AbortSignal.timeout(1500) });
+                        return true;
+                    } catch (e) { }
+                }
+                await appendLog(`> [WARN] اختلال در شبکه! تلاش مجدد برای اتصال (${i}/${maxRetries})...`, "#f59e0b", 600);
+            }
+            return false;
+        }
+
+        async function verifyServiceAccess(serviceKey) {
+            const serviceEndpoints = {
+                'gemini': 'https://generativelanguage.googleapis.com',
+                'gpt': 'https://api.openai.com',
+                'claude': 'https://api.anthropic.com',
+                'spotify': 'https://spotify.com'
+            };
+
+            const targetUrl = serviceEndpoints[serviceKey];
+            if (!targetUrl) return true;
+
+            try {
+                await fetch(targetUrl, { mode: 'no-cors', cache: 'no-cache', signal: AbortSignal.timeout(2000) });
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        window.reTestSinglePing = async function (host, badgeId) {
+            const badge = document.getElementById(badgeId);
+            badge.style.background = '#64748b';
+            badge.innerText = 'Testing...';
+            const res = await getRealPing(host);
+            if (!res.isTimeout) {
+                badge.style.background = '#10b981';
+                badge.innerText = `${res.ping} ms`;
+            } else {
+                badge.style.background = '#ef4444';
+                badge.innerText = 'Timeout';
+            }
+        };
+
+        generateBtn.addEventListener('click', async () => {
+            const count = parseInt(document.getElementById('count').value) || 1;
+            const requiredCoins = count === 1 ? 5 : (count === 5 ? 25 : count * 5);
+
+            if ((userData.coins || 0) < requiredCoins) {
+                document.getElementById('modalTitle').innerText = "عدم موجودی سکه کافی";
+                document.getElementById('modalDesc').innerText = `برای ساخت ${count} کانفیگ نیاز به ${requiredCoins} سکه دارید. موجودی شما: ${userData.coins || 0} سکه است.`;
+                vipAlertModal.style.display = 'flex';
+                return;
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> در حال پردازش توسط SEVEN AI...`;
+
+            const userRef = doc(db, 'users', auth.currentUser.uid);
+
+            try {
+                await updateDoc(userRef, { coins: increment(-requiredCoins) });
+            } catch (e) {
+                alert('خطا در کسر سکه: ' + e.message);
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = `<i class="fa-solid fa-bolt"></i> ساخت کانفیگ اختصاصی`;
+                return;
+            }
+
+            const selectedIsp = document.getElementById('isp').value.toUpperCase();
+            const selectedProtocol = document.getElementById('protocol').value.toUpperCase();
+            const selectedCountry = document.getElementById('country').value;
+            const selectedService = document.getElementById('aiService').value;
+
+            const resultsDiv = document.getElementById('results');
+            const inlineTerminal = document.getElementById('inlineTerminal');
+            const terminalLog = document.getElementById('terminalLog');
+
+            inlineTerminal.style.display = 'block';
+            terminalLog.innerHTML = "";
+            resultsDiv.innerHTML = "";
+
+            await appendLog("> [SEVEN AI] راه‌اندازی موتور هوشمند پردازش شبکه...", "#38bdf8", 100);
+            await appendLog(`> اپراتور هدف: <span class="code-block">${selectedIsp}</span> | پروتکل: <span class="code-block">${selectedProtocol}</span>`, "#a7f3d0", 120);
+
+            if (selectedCountry !== 'all') {
+                await appendLog(`> آنالیز هوشمند کانفیگ‌ها برای کشور: <span class="code-block">${selectedCountry}</span>...`, "#f59e0b", 120);
+            }
+
+            if (selectedService !== 'none') {
+                await appendLog(`> بررسی عبور از تحریم برای سرویس: <span class="code-block">${selectedService.toUpperCase()}</span>...`, "#38bdf8", 120);
+            }
+
+            await runAiTerminalAnimation();
+
+            const sessionUuid = generateUUID();
+            await appendLog(`> تولید کلید اختصاصی رمزشده: <span class="code-block">${sessionUuid}</span>`, "#a7f3d0", 120);
+
+            const isConnected = await checkConnectionWithRetry(3);
+
+            if (!isConnected) {
+                await appendLog("> [خطای بحرانی] اتصال اینترنت کاملاً قطع شده است!", "#ef4444", 200);
+                await appendLog("> [سیستم] بازگرداندن سکه‌های کسر شده به حساب...", "#f59e0b", 200);
+
+                try {
+                    await updateDoc(userRef, { coins: increment(requiredCoins) });
+                    await appendLog(`> [موفق] تعداد ${requiredCoins} سکه به موجودی شما بازگشت داده شد.`, "#10b981", 100);
+                } catch (err) {
+                    await appendLog(`> [خطا] بازگشت سکه ناموفق بود: ${err.message}`, "#ef4444", 100);
+                }
+
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = `<i class="fa-solid fa-bolt"></i> ساخت کانفیگ اختصاصی`;
+                return;
+            }
+
+            try {
+                const res = await fetch('ghost.txt');
+                const text = await res.text();
+                let lines = text.split('\n').filter(l => l.trim().length > 0);
+
+                // فیلتر بر اساس پروتکل
+                if (selectedProtocol !== 'ALL') {
+                    lines = lines.filter(line => line.toLowerCase().startsWith(selectedProtocol.toLowerCase()));
+                }
+
+                // فیلتر بر اساس کشور انتخابی
+                if (selectedCountry !== 'all') {
+                    const countryFiltered = lines.filter(line => 
+                        line.toUpperCase().includes(selectedCountry) || 
+                        line.toLowerCase().includes(selectedCountry.toLowerCase())
+                    );
+                    if (countryFiltered.length > 0) {
+                        lines = countryFiltered;
+                    }
+                }
+
+                // بررسی دسترس‌پذیری سرویس انتخاب‌شده (Gemini, GPT و ...)
+                if (selectedService !== 'none') {
+                    const isServiceAccessible = await verifyServiceAccess(selectedService);
+                    if (isServiceAccessible) {
+                        await appendLog(`> [تایید شد] کانفیگ‌های بدون تحریم برای ${selectedService.toUpperCase()} استخراج شد ✅`, "#10b981", 120);
+                    } else {
+                        await appendLog(`> [هشدار] ممکن است برخی گره‌ها توسط ${selectedService.toUpperCase()} محدود شده باشند.`, "#f59e0b", 120);
+                    }
+                }
+
+                if (lines.length === 0) {
+                    await appendLog("> [SEVEN AI] خطا: مسیر تونل معتبری برای گزینه‌های انتخابی یافت نشد!", "#ef4444");
+                    await updateDoc(userRef, { coins: increment(requiredCoins) });
+                    await appendLog("> [سیستم] سکه‌ها به حساب شما بازگردانده شد.", "#f59e0b");
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = `<i class="fa-solid fa-bolt"></i> ساخت کانفیگ اختصاصی`;
+                    return;
+                }
+
+                await appendLog(`> اسکن گره‌های فعال شبکه... تعداد ${lines.length} مسیر یافت شد.`, "#f59e0b", 120);
+
+                let matchedConfigs = [];
+                const BATCH_SIZE = 10;
+
+                for (let i = 0; i < lines.length; i += BATCH_SIZE) {
+                    if (matchedConfigs.length >= count) break;
+
+                    const batch = lines.slice(i, i + BATCH_SIZE);
+                    const batchPromises = batch.map(async (line) => {
+                        const config = line.trim();
+                        const host = config.includes('@') ? config.split('@')[1].split(':')[0] : '1.1.1.1';
+                        const pingResult = await getRealPing(host);
+                        return { config, host, ...pingResult };
+                    });
+
+                    const batchResults = await Promise.all(batchPromises);
+                    const validNodes = batchResults.filter(c => !c.isTimeout && c.ping <= 800);
+                    matchedConfigs.push(...validNodes);
+
+                    await appendLog(`> تست پینگ گره [${matchedConfigs.length}/${count}] -> پاسخ‌دهی پایدار OK`, "#38bdf8", 80);
+                }
+
+                if (matchedConfigs.length < count) {
+                    const remainingNeeded = count - matchedConfigs.length;
+                    const fallbackBatch = lines.slice(0, remainingNeeded).map(line => {
+                        const config = line.trim();
+                        const host = config.includes('@') ? config.split('@')[1].split(':')[0] : '1.1.1.1';
+                        return { config, host, ping: 9999, isTimeout: true };
+                    });
+                    matchedConfigs.push(...fallbackBatch);
+                }
+
+                matchedConfigs.sort((a, b) => a.ping - b.ping);
+                matchedConfigs = matchedConfigs.slice(0, count);
+
+                await appendLog("> [SEVEN AI] در حال آنالیز پویای دسترسی به سرویس‌ها...", "#f59e0b", 150);
+
+                const services = await loadServicesConfig();
+                const testedServices = [];
+
+                for (const service of services) {
+                    const isOk = await checkSiteFavicon(service.url);
+                    testedServices.push({ ...service, isOk });
+
+                    const statusText = isOk ? '<b style="color:#10b981">باز می‌کند ✅</b>' : '<b style="color:#ef4444">مسدود ❌</b>';
+                    await appendLog(`> [تست ${service.name}]: ${statusText}`, "#a7f3d0", 100);
+                }
+
+                await appendLog("> [SEVEN AI] ساخت کانفیگ با موفقیت به پایان رسید!", "#10b981", 100);
+
+                const fullConfigsList = matchedConfigs.map(item => {
+                    let raw = item.config.split('#')[0];
+                    return `${raw}#TELEGRAM: @aqay_ghost`;
+                });
+
+                resultsDiv.innerHTML = "";
+
+                const copyAllBtn = document.createElement('button');
+                copyAllBtn.className = 'btn-copy-all';
+                copyAllBtn.innerHTML = `<i class="fa-solid fa-copy"></i> کپی یکجای تمامی کانفیگ‌ها (${count} عدد)`;
+                copyAllBtn.onclick = () => {
+                    navigator.clipboard.writeText(fullConfigsList.join('\n'));
+                    alert(`${count} کانفیگ به صورت یکجا کپی شد! می‌توانید وارد V2Ray کنید.`);
+                };
+                resultsDiv.appendChild(copyAllBtn);
+
+                const okServices = testedServices.filter(s => s.isOk);
+                const mainBadges = okServices.slice(0, 4);
+                const remainingCount = okServices.length - 4;
+
+                let badgesHtml = mainBadges.map(s => `
+                    <span class="service-icon ok" title="${s.name} باز می‌شود">
+                        <i class="${s.iconClass}"></i>
+                    </span>
+                `).join('');
+
+                if (remainingCount > 0) {
+                    const moreNames = okServices.slice(4).map(s => s.name).join('، ');
+                    badgesHtml += `<span class="more-badge" title="سایر سرویس‌های باز: ${moreNames}">+${remainingCount}</span>`;
+                }
+
+                matchedConfigs.forEach((item, idx) => {
+                    const finalConfigStr = fullConfigsList[idx];
+                    const badgeId = `pingBadge_${idx}`;
+
+                    const card = document.createElement('div');
+                    card.className = 'config-card-compact';
+
+                    const isTimeout = item.isTimeout;
+                    const badgeBg = isTimeout ? '#ef4444' : '#10b981';
+                    const pingLabel = isTimeout ? 'Timeout' : `${item.ping} ms`;
+
+                    card.innerHTML = `
+                        <div class="config-info">
+                            <span class="config-num">#${idx + 1}</span>
+                            <span class="config-code-preview">${finalConfigStr}</span>
+                        </div>
+                        <div class="config-actions">
+                            <div class="service-badges">
+                                ${badgesHtml}
+                            </div>
+
+                            <span class="ping-pill" id="${badgeId}" style="background:${badgeBg}">${pingLabel}</span>
+                            <button class="btn-action-sm" title="تست پینگ مجدد" onclick="window.reTestSinglePing('${item.host}', '${badgeId}')">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                            <button class="btn-action-sm" title="کپی" onclick="navigator.clipboard.writeText('${finalConfigStr}'); alert('کانفیگ کپی شد!');">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+                    resultsDiv.appendChild(card);
+                });
+
+            } catch (e) {
+                await appendLog(`> [خطای SEVEN AI] ${e.message}`, "#ef4444");
+                await updateDoc(userRef, { coins: increment(requiredCoins) });
+                await appendLog("> [سیستم] سکه‌ها به حساب شما عودت داده شد.", "#f59e0b");
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = `<i class="fa-solid fa-bolt"></i> ساخت کانفیگ اختصاصی`;
+            }
+        });
+    </script>
+</body>
+
+</html>

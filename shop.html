@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فروشگاه | Ghost V2Ray</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .shop-container { padding: 15px; }
+        .plan-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            position: relative;
+            overflow: hidden;
+        }
+        .plan-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #ef4444;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .price-tag {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 10px 0;
+        }
+        .old-price {
+            text-decoration: line-through;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-left: 8px;
+        }
+        .btn-usdt {
+            background: #009393;
+            color: white;
+            margin-top: 8px;
+        }
+        .btn-usdt:hover { background: #007a7a; }
+        .usdt-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .usdt-box {
+            background: #ffffff;
+            width: 100%;
+            max-width: 380px;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .wallet-addr {
+            background: #f1f5f9;
+            padding: 10px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+            margin: 10px 0;
+            border: 1px dashed #cbd5e1;
+            direction: ltr;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-viewport">
+        <div class="top-nav">
+            <div class="brand"><i class="fa-solid fa-store"></i> فروشگاه GHOST</div>
+            <a href="index.html" style="text-decoration:none; font-weight:bold; color:#6366f1;">بازگشت ←</a>
+        </div>
+
+        <div class="content shop-container">
+            <!-- پلن‌های اشتراک -->
+            <h3 style="margin-top:0;"><i class="fa-solid fa-crown" style="color:#f59e0b;"></i> پلن‌های اشتراک VIP</h3>
+
+            <!-- پلن ۱ ماهه -->
+            <div class="plan-card">
+                <h4>پلن ۱ ماهه VIP</h4>
+                <p style="font-size:0.85rem; color:#64748b;">دسترسی کامل به سرورهای اختصاصی و ساخت نامحدود</p>
+                <div class="price-tag">۱۵۰,۰۰۰ تومان</div>
+                <a href="https://t.me/hexdik?text=سلام،%20قصد%20خرید%20پلن%201%20ماهه%20VIP%20را%20دارم." target="_blank" class="btn btn-primary" style="text-decoration:none;">
+                    <i class="fa-brands fa-telegram"></i> خرید از تلگرام
+                </a>
+                <button class="btn btn-usdt usdt-trigger" data-title="پلن ۱ ماهه VIP" data-toman="150000" data-usdt="2.5">
+                    <i class="fa-solid fa-coins"></i> خرید با تتر (2.5 USDT)
+                </button>
+            </div>
+
+            <!-- پلن ۳ ماهه -->
+            <div class="plan-card">
+                <span class="plan-badge">۲۰٪ تخفیف</span>
+                <h4>پلن ۳ ماهه VIP</h4>
+                <p style="font-size:0.85rem; color:#64748b;">به صرفه‌تر برای استفاده طولانی مدت</p>
+                <div class="price-tag">
+                    <span class="old-price">۴۵۰,۰۰۰</span>
+                    ۳۶۰,۰۰۰ تومان
+                </div>
+                <a href="https://t.me/hexdik?text=سلام،%20قصد%20خرید%20پلن%203%20ماهه%20VIP%20را%20دارم." target="_blank" class="btn btn-primary" style="text-decoration:none;">
+                    <i class="fa-brands fa-telegram"></i> خرید از تلگرام
+                </a>
+                <button class="btn btn-usdt usdt-trigger" data-title="پلن ۳ ماهه VIP" data-toman="360000" data-usdt="6.0">
+                    <i class="fa-solid fa-coins"></i> خرید با تتر (6.0 USDT)
+                </button>
+            </div>
+
+            <!-- پلن ۱۲ ماهه -->
+            <div class="plan-card">
+                <span class="plan-badge" style="background:#10b981;">۴۰٪ تخفیف ویژه</span>
+                <h4>پلن ۱۲ ماهه VIP (یک‌ساله)</h4>
+                <p style="font-size:0.85rem; color:#64748b;">پشتوانه ۱ ساله با بالاترین تخفیف ممکن</p>
+                <div class="price-tag">
+                    <span class="old-price">۱,۸۰۰,۰۰۰</span>
+                    ۱,۰۸۰,۰۰۰ تومان
+                </div>
+                <a href="https://t.me/hexdik?text=سلام،%20قصد%20خرید%20پلن%2012%20ماهه%20VIP%20را%20دارم." target="_blank" class="btn btn-primary" style="text-decoration:none;">
+                    <i class="fa-brands fa-telegram"></i> خرید از تلگرام
+                </a>
+                <button class="btn btn-usdt usdt-trigger" data-title="پلن ۱۲ ماهه VIP" data-toman="1080000" data-usdt="18.0">
+                    <i class="fa-solid fa-coins"></i> خرید با تتر (18.0 USDT)
+                </button>
+            </div>
+
+            <hr style="border:none; border-top:1px dashed #cbd5e1; margin:25px 0;">
+
+            <!-- بخش خرید سکه -->
+            <h3><i class="fa-solid fa-coins" style="color:#f59e0b;"></i> خرید بسته‌ای سکه</h3>
+            <div class="plan-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>تعداد سکه انتخاب شده:</span>
+                    <strong id="coinCountDisplay" style="font-size:1.2rem; color:#6366f1;">5 سکه</strong>
+                </div>
+
+                <input type="range" id="coinRange" min="5" max="10000" step="5" value="5" style="width:100%; margin:20px 0; accent-color:#6366f1;">
+
+                <div style="text-align:center; margin-bottom:15px;">
+                    <span id="discountBadge" style="display:none; background:#d1fae5; color:#059669; font-size:0.8rem; padding:4px 8px; border-radius:10px; font-weight:bold;"></span>
+                    <div class="price-tag" id="coinPriceDisplay">۱۰,۰۰۰ تومان</div>
+                </div>
+
+                <a id="coinTgBtn" href="#" target="_blank" class="btn btn-primary" style="text-decoration:none;">
+                    <i class="fa-brands fa-telegram"></i> خرید این بسته از تلگرام
+                </a>
+                <button id="coinUsdtBtn" class="btn btn-usdt" style="margin-top:8px;">
+                    <i class="fa-solid fa-coins"></i> خرید با تتر (<span id="coinUsdtPrice">0.17</span> USDT)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال پرداخت تتر -->
+    <div class="usdt-modal" id="usdtModal">
+        <div class="usdt-box">
+            <h3 id="usdtModalTitle">پرداخت با تتر (USDT-TRC20)</h3>
+            <p style="font-size:0.85rem; color:#64748b;">لطفاً دقیقاً مبلغ مشخص شده را به آدرس زیر واریز نمایید:</p>
+            <div style="font-size:1.1rem; font-weight:bold; color:#009393; margin:10px 0;" id="modalUsdtAmount">0 USDT</div>
+            
+            <div class="wallet-addr" id="walletAddr">TFmg1ouLvzjHtbHypDqxL99CJfDFps7wp1</div>
+            
+            <button class="btn" id="copyWalletBtn" style="background:#f1f5f9; color:#334155; margin-bottom:8px;">
+                <i class="fa-regular fa-copy"></i> کپی آدرس کیف پول
+            </button>
+            <a id="sendReceiptBtn" href="#" target="_blank" class="btn btn-primary" style="text-decoration:none;">
+                <i class="fa-brands fa-telegram"></i> ارسال رسید پرداخت به تلگرام
+            </a>
+            <button class="btn" id="closeUsdtModal" style="background:transparent; color:#94a3b8; margin-top:5px;">انصراف</button>
+        </div>
+    </div>
+
+    <script>
+        // آدرس تتر پشتیبانی شده
+        const WALLET = "TFmg1ouLvzjHtbHypDqxL99CJfDFps7wp1";
+        const USDT_RATE = 60000; // نرخ محاسباتی تتر جهت تبدیل
+
+        const coinRange = document.getElementById('coinRange');
+        const coinCountDisplay = document.getElementById('coinCountDisplay');
+        const coinPriceDisplay = document.getElementById('coinPriceDisplay');
+        const discountBadge = document.getElementById('discountBadge');
+        const coinTgBtn = document.getElementById('coinTgBtn');
+        const coinUsdtBtn = document.getElementById('coinUsdtBtn');
+        const coinUsdtPrice = document.getElementById('coinUsdtPrice');
+
+        let currentCoinUsdt = 0.17;
+        let currentCoinToman = 10000;
+        let currentCoinVal = 5;
+
+        function calculateCoins(val) {
+            currentCoinVal = val;
+            let basePricePerCoin = 2000; // ۵ سکه ۱۰ هزار تومن -> هر سکه ۲۰۰۰
+            let rawPrice = val * basePricePerCoin;
+            let discountPercent = 0;
+
+            if (val >= 1000 && val < 3000) discountPercent = 15;
+            else if (val >= 3000 && val < 7000) discountPercent = 25;
+            else if (val >= 7000) discountPercent = 40;
+
+            let finalPrice = rawPrice * (1 - discountPercent / 100);
+            currentCoinToman = Math.round(finalPrice);
+            currentCoinUsdt = (currentCoinToman / USDT_RATE).toFixed(2);
+            if (currentCoinUsdt < 0.1) currentCoinUsdt = 0.17;
+
+            coinCountDisplay.innerText = `${val.toLocaleString('fa-IR')} سکه`;
+            coinPriceDisplay.innerText = `${currentCoinToman.toLocaleString('fa-IR')} تومان`;
+            coinUsdtPrice.innerText = currentCoinUsdt;
+
+            if (discountPercent > 0) {
+                discountBadge.style.display = 'inline-block';
+                discountBadge.innerText = `${discountPercent}٪ تخفیف پلکانی اعمال شد`;
+            } else {
+                discountBadge.style.display = 'none';
+            }
+
+            coinTgBtn.href = `https://t.me/hexdik?text=سلام،%20قصد%20خرید%20${val}%20سکه%20به%20مبلغ%20${currentCoinToman}%20تومان%20را%20دارم.`;
+        }
+
+        coinRange.addEventListener('input', (e) => calculateCoins(parseInt(e.target.value)));
+        calculateCoins(5);
+
+        // مودال تتر
+        const usdtModal = document.getElementById('usdtModal');
+        const usdtModalTitle = document.getElementById('usdtModalTitle');
+        const modalUsdtAmount = document.getElementById('modalUsdtAmount');
+        const sendReceiptBtn = document.getElementById('sendReceiptBtn');
+
+        function openUsdtModal(title, usdtAmount) {
+            usdtModalTitle.innerText = title;
+            modalUsdtAmount.innerText = `${usdtAmount} USDT`;
+            sendReceiptBtn.href = `https://t.me/hexdik?text=سلام،%20رسید%20پرداخت%20تتر%20برای%20${encodeURIComponent(title)}%20به%20ارزش%20${usdtAmount}%20USDT%20را%20ارسال%20می‌کنم.`;
+            usdtModal.style.display = 'flex';
+        }
+
+        document.querySelectorAll('.usdt-trigger').forEach(btn => {
+            btn.addEventListener('click', () => {
+                openUsdtModal(btn.dataset.title, btn.dataset.usdt);
+            });
+        });
+
+        coinUsdtBtn.addEventListener('click', () => {
+            openUsdtModal(`خرید ${currentCoinVal} سکه`, currentCoinUsdt);
+        });
+
+        document.getElementById('closeUsdtModal').addEventListener('click', () => {
+            usdtModal.style.display = 'none';
+        });
+
+        document.getElementById('copyWalletBtn').addEventListener('click', () => {
+            navigator.clipboard.writeText(WALLET);
+            alert('آدرس کیف پول کپی شد!');
+        });
+    </script>
+</body>
+</html>
