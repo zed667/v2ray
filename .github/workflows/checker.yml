@@ -2,8 +2,11 @@ name: V2Ray Ping Checker
 
 on:
   schedule:
-    - cron: '0 */2 * * *' # اجرای خودکار هر ۲ ساعت یکبار
-  workflow_dispatch: # امکان اجرای دستی از داخل پنل گیت‌هاب
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   ping-check:
